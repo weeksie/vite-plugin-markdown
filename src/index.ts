@@ -93,7 +93,7 @@ const tf = (code: string, id: string, options: PluginOptions): TransformResult =
 
         if (node.tagName === 'code') {
           const codeContent = DomUtils.getInnerHTML(node, { decodeEntities: true })
-          node.attribs.dangerouslySetInnerHTML = `vfm{{ __html: \`${codeContent.replace(/([\\\`])/g, '\\$1')}\`}}vfm`
+          node.attribs.dangerouslySetInnerHTML = `vfm{{ __html: \`${codeContent.replace(/([\\`])/g, '\\$1')}\`}}vfm`
           node.childNodes = []
         }
 
