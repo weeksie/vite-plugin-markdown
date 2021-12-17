@@ -117,7 +117,7 @@ const tf = (code, id, options) => {
         Object.keys(props).forEach(function (key) {
           SubReactComponent[key] = props[key]
         })
-        ${require('esbuild').transformSync(reactCode).code}
+        ${require('esbuild').transformSync(reactCode, { jsx: 'preserve' }).code}
         return markdown
       }
     `;
