@@ -93,7 +93,7 @@ const tf = (code: string, id: string, options: PluginOptions): TransformResult =
 
         if (node.tagName === 'code') {
           const codeContent = DomUtils.getInnerHTML(node, { decodeEntities: true })
-          node.attribs.dangerouslySetInnerHTML = `vfm{{ __html: \`${codeContent.replace(/([\\`])/g, '\\$1')}\`}}vfm`
+          node.attribs.dangerouslySetInnerHTML = `vfm{{ __html: \`${codeContent.replace(/([\\\`])/g, '\\$1')}\`}}vfm`
           node.childNodes = []
         }
 
@@ -117,7 +117,7 @@ const tf = (code: string, id: string, options: PluginOptions): TransformResult =
         Object.keys(props).forEach(function (key) {
           SubReactComponent[key] = props[key]
         })
-        ${require('@babel/core').transformSync(reactCode, { ast: false, presets: ['@babel/preset-react'] }).code}
+        ${require('esbuild').transformSync(reactCode, { }).code}
         return markdown
       }
     `
