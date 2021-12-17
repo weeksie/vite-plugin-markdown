@@ -117,7 +117,7 @@ const tf = (code: string, id: string, options: PluginOptions): TransformResult =
         Object.keys(props).forEach(function (key) {
           SubReactComponent[key] = props[key]
         })
-        ${require('esbuild').transformSync(reactCode, { jsx: 'preserve' }).code}
+        ${require('esbuild').transformSync(reactCode).code}
         return markdown
       }
     `
@@ -125,32 +125,6 @@ const tf = (code: string, id: string, options: PluginOptions): TransformResult =
     content.addExporting('ReactComponent')
   }
 
-  if (options.mode?.includes(Mode.VUE)) {
-    const root = parseDOM(html)
-
-    // Top-level <pre> tags become <pre v-pre>
-    root.forEach((node: DomHandlerNode) => {
-      if (node instanceof Element) {
-        if (['pre', 'code'].includes(node.tagName)) {
-          node.attribs['v-pre'] = 'true'
-        }
-      }
-    })
-
-    // Any <code> tag becomes <code v-pre> excepting under `<pre>`
-    const markCodeAsPre = (node: DomHandlerNode): void => {
-      if (node instanceof Element) {
-        if (node.tagName === 'code') node.attribs['v-pre'] = 'true'
-        if (node.childNodes.length > 0) node.childNodes.forEach(markCodeAsPre)
-      }
-    }
-    root.forEach(markCodeAsPre)
-
-    const { code: compiledVueCode } = require('@vue/compiler-sfc').compileTemplate({ source: DomUtils.getOuterHTML(root, { decodeEntities: true }), filename: id, id })
-    content.addContext(compiledVueCode.replace('\nexport function render(', '\nfunction vueRender(') + `\nconst VueComponent = { render: vueRender }\nVueComponent.__hmrId = ${JSON.stringify(id)}\nconst VueComponentWith = (components) => ({ components, render: vueRender })\n`)
-    content.addExporting('VueComponent')
-    content.addExporting('VueComponentWith')
-  }
 
   return {
     code: content.export(),

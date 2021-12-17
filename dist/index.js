@@ -59,7 +59,7 @@ class ExportedContent {
 }
 _ExportedContent_exports = new WeakMap(), _ExportedContent_contextCode = new WeakMap();
 const tf = (code, id, options) => {
-    var _a, _b, _c, _d;
+    var _a, _b, _c;
     if (!id.endsWith('.md'))
         return null;
     const content = new ExportedContent();
@@ -117,37 +117,12 @@ const tf = (code, id, options) => {
         Object.keys(props).forEach(function (key) {
           SubReactComponent[key] = props[key]
         })
-        ${require('esbuild').transformSync(reactCode, { jsx: 'preserve' }).code}
+        ${require('esbuild').transformSync(reactCode).code}
         return markdown
       }
     `;
         content.addContext(`import React from "react"\nconst ${subComponentNamespace} = {}\nconst ReactComponent = ${compiledReactCode}`);
         content.addExporting('ReactComponent');
-    }
-    if ((_d = options.mode) === null || _d === void 0 ? void 0 : _d.includes(Mode.VUE)) {
-        const root = htmlparser2_1.parseDOM(html);
-        // Top-level <pre> tags become <pre v-pre>
-        root.forEach((node) => {
-            if (node instanceof domhandler_1.Element) {
-                if (['pre', 'code'].includes(node.tagName)) {
-                    node.attribs['v-pre'] = 'true';
-                }
-            }
-        });
-        // Any <code> tag becomes <code v-pre> excepting under `<pre>`
-        const markCodeAsPre = (node) => {
-            if (node instanceof domhandler_1.Element) {
-                if (node.tagName === 'code')
-                    node.attribs['v-pre'] = 'true';
-                if (node.childNodes.length > 0)
-                    node.childNodes.forEach(markCodeAsPre);
-            }
-        };
-        root.forEach(markCodeAsPre);
-        const { code: compiledVueCode } = require('@vue/compiler-sfc').compileTemplate({ source: htmlparser2_1.DomUtils.getOuterHTML(root, { decodeEntities: true }), filename: id, id });
-        content.addContext(compiledVueCode.replace('\nexport function render(', '\nfunction vueRender(') + `\nconst VueComponent = { render: vueRender }\nVueComponent.__hmrId = ${JSON.stringify(id)}\nconst VueComponentWith = (components) => ({ components, render: vueRender })\n`);
-        content.addExporting('VueComponent');
-        content.addExporting('VueComponentWith');
     }
     return {
         code: content.export(),
