@@ -96,7 +96,7 @@ const tf = (code, id, options) => {
                 }
                 if (node.tagName === 'code') {
                     const codeContent = htmlparser2_1.DomUtils.getInnerHTML(node, { decodeEntities: true });
-                    node.attribs.dangerouslySetInnerHTML = `vfm{{ __html: \`${codeContent.replace(/([\\\`])/g, '\\$1')}\`}}vfm`;
+                    node.attribs.dangerouslySetInnerHTML = `vfm{{ __html: \`${codeContent.replace(/([\\`])/g, '\\$1')}\`}}vfm`;
                     node.childNodes = [];
                 }
                 if (node.childNodes.length > 0) {
@@ -117,7 +117,7 @@ const tf = (code, id, options) => {
         Object.keys(props).forEach(function (key) {
           SubReactComponent[key] = props[key]
         })
-        ${require('esbuild').transformSync(reactCode, {}).code}
+        ${require('esbuild').transformSync(reactCode, { jsx: 'preserve' }).code}
         return markdown
       }
     `;
