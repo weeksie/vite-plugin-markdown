@@ -117,7 +117,7 @@ const tf = (code: string, id: string, options: PluginOptions): TransformResult =
         Object.keys(props).forEach(function (key) {
           SubReactComponent[key] = props[key]
         })
-        ${require('esbuild').transformSync(reactCode, { loader: 'tsx' }).code}
+        ${require('esbuild').transformSync(reactCode, { loader: 'jsx' }).code}
         return markdown
       }
     `
